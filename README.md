@@ -8,21 +8,27 @@
 1. clonar el repositorio
 2. ejecutar
 
-´´´
+```
 npm install
-´´´
+```
 
 3. tener Nest CLI instalado
 
-´´´
+```
 npm i -g @nestjs/cli
-´´´
+```
 
 4. Levantar la base de datos
 
-´´´
+```
 docker-compose up -d
-´´´
+```
+
+5. Recosntruir base de datos con el seed
+
+```
+http://localhost:3000/api/v2/seed
+```
 
 ##Stack usado
 *MongoDB
