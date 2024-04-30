@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 
 import { Model, isValidObjectId } from 'mongoose';
 
@@ -9,12 +10,16 @@ import { Pokemon } from './entities/pokemon.entity';
 import { PaginationDto } from 'src/common/dto/paginatiom.dto';
 
 
+
 @Injectable()
 export class PokemonService {
 
+  private defaultLimit : number = this.configServive.get<number>('defaultLimit')
+
   constructor(
     @InjectModel( Pokemon.name)
-    private readonly pokemonModel : Model<Pokemon> 
+    private readonly pokemonModel : Model<Pokemon>,
+    private readonly configServive: ConfigService // servicio utilizado para leer las variables de entorno
   ) { }
 
   async create(createPokemonDto: CreatePokemonDto) {
@@ -26,16 +31,15 @@ export class PokemonService {
    }
   }
 
-
-  
   findAll( paginationDto: PaginationDto ) {
-    const { limit = 10, offset = 0 } = paginationDto;
+
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
     
     return this.pokemonModel.find()
     .limit(limit)
     .skip( offset ) //paginación
     .sort({
-      no: 1 //ordenando de manera asendente
+      no: 1 //ordenando de manera asendente por el campo no
     })
     .select('-__v'); //quitando una columna
   }
@@ -81,7 +85,6 @@ export class PokemonService {
 
     if( deletedCount  === 0 )
          throw new BadRequestException(`Pokemon with id ${ id } not found `)
-
 
     return;
   }
